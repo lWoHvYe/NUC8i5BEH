@@ -1,7 +1,7 @@
 # Nucintosh
-- Version：**230711**
+- Version：**240926**
 - Maintainer：**维奇**[@weachy](https://github.com/weachy)
-- [愿你历经时间，仍是少年]
+
 
 如果你想了解更多关于 NUC8ixBE 豆子峡谷黑苹果相关知识，请查阅 [我的文章](https://u.nu/bean)
 If you want to learn more about hackintosh with Intel NUC 'Bean Canyon'. Please visit: https://u.nu/bean
@@ -10,7 +10,15 @@ If you want to learn more about hackintosh with Intel NUC 'Bean Canyon'. Please 
 * 2022.09: 最近折腾适合配合黑果使用的无线蓝牙耳机，总结了一篇文章，希望能帮到有相关需求的朋友： https://zhuanlan.zhihu.com/p/569109027
 
 
-* 当前引导支持 Mojave、Catalina、Big Sur、Monterey、Ventura、Sonoma（10.14～14.x）。
+* 当前引导支持 Mojave、Catalina、Big Sur、Monterey、Ventura、Sonoma、Sequoia（10.14～15.x）。
+
+
+## macOS Sonoma/Sequoia 系统安装白果网卡补丁（OpenCore Legacy Patcher）的说明：
+1. 下载最新版本的 EFI 与 OpenCore Legacy Patcher 补丁程序 “OpenCore-Patcher.pkg”
+（https://github.com/dortania/OpenCore-Legacy-Patcher/releases）。
+2. 更新你的 EFI 到最新版本，升级系统至 macOS Sonoma/Sequoia 最新版本。
+3. 运行 OpenCore Legacy Patcher > Post-Install Root Patch > Start Root Patching > 完成，按提示重启。
+4. 再次进入系统后，即可恢复 Wi-Fi 网络。
 
 
 ## OpenCore 实现双系统引导的说明：
@@ -51,19 +59,18 @@ If you want to learn more about hackintosh with Intel NUC 'Bean Canyon'. Please 
 
 
 ## Intel 板载蓝牙驱动
-⚠️ 目前最优方案仍然是白果卡蓝牙，目前板载蓝牙默认不支持 Sniff 模式，会增加蓝牙外设耗电量，另外有不少蓝牙鼠标无法连接使用。
+⚠️ 目前最优方案仍然是白果卡蓝牙，目前板载蓝牙默认不支持 Sniff 模式，会增加蓝牙外设耗电量，另外有部分蓝牙鼠标无法连接使用。
 考虑到 Intel 蓝牙对于小白使用不太友好，尤其 macOS Monterey 与早先系统的大改，我整合了豆子峡谷专用的 intel 板载蓝牙驱动包（兼容 10.14 以上系统），请到群共享或面包多平台链接中获取“intel板载蓝牙驱动_for_豆子”。
 
 
 ## Intel 板载 Intel Wi-Fi 驱动
-⚠️ 有很多人不断在问驱动是否完美的问题。要回答这个问题首先要定义什么是“完美”，如果将白果卡的体验定为完美，那板载网卡几乎不可能完美，如果只是满足基础上网需求，倒是算可用，因当前驱动是从 OpenBSD 平台的 Intel 驱动移植，只能说尽力在做适配和兼容、尽量接近完美，适合要求不高的用户。最优方案仍然是白果卡。
+⚠️ 因当前驱动是从 OpenBSD 平台的 Intel 驱动移植，只能说尽力在做适配和兼容、尽量接近完美，适合要求不高的用户，目前隔空投送不被支持，接力只能单向可用。最优方案仍然是白果卡。
 考虑到板载 Wifi 驱动大佬 @zxystd 发布了 Intel Wi-Fi 驱动的正式版，我在 EFI 做了集成工作，但是默认为关闭状态（因会和白果网卡冲突），如需使用自行按如下方法开启：
 
-1. 根据自己当前的 macOS 版本下载 AirportItlwm 驱动（名称格式为 AirportItlwm_驱动版本号_stable_macOS系统代号.kext.zip），地址：https://github.com/OpenIntelWireless/itlwm/releases
+1. 根据自己当前的 macOS 版本下载 AirportItlwm 驱动（名称格式为 AirportItlwm_驱动版本号_stable_macOS系统代号.kext.zip，注意系统版本大于或小于 Sonoma 14.4 驱动分为两个，不建议使用 Sonoma 14.5 之前的系统，性能下降较为严重），地址：https://github.com/OpenIntelWireless/itlwm/releases
 2. 将解压出的 AirportItlwm.kext 放入 /EFI/OC/Kexts/ 文件夹。
 3. 修改 config.plist，启用注册 AirportItlwm.kext 的代码（搜索“AirportItlwm.kext”，下面几行找到 <key>Enabled</key> 下一行的值 <false/> 改为 <true/>）。
-4. 修改 config.plist，搜索“IO80211Family.kext”，下面几行找到 <key>Enabled</key> 下一行的值 <false/> 改为 <true/>
-5. 重启电脑。
+4. 重启电脑。
 
 
 ## 开启读卡器驱动（仅适用于【未硬改白果网卡】用户）
@@ -73,6 +80,29 @@ If you want to learn more about hackintosh with Intel NUC 'Bean Canyon'. Please 
 
 
 ## 更新日志（Changelog）：
+
+2024-09-26
+⚠️⚠️ 使用 intel 网卡的配置请自行下载添加 kext 驱动，默认未添加。具体操作参考上面《Intel 板载 Intel Wi-Fi 驱动》
+⚠️⚠️ 白果网卡需要进入系统后手动安装 OCLP 补丁，
+1. 更新 OpenCore 1.0.1 正式版。支持 Sonoma/Sequoia 最新版本。详细操作步骤见上方《macOS Sonoma/Sequoia 系统安装白果网卡补丁（OpenCore Legacy Patcher）的说明》。
+2. 例行升级 kext 版本（Lilu、WhateverGreen、AppleALC、NVMeFix、FeatureUnlock、AMFIPass、IOSkywalkFamily）。
+
+2024-08-27
+1. 更新 OpenCore 1.0.1 正式版。支持 Sonoma 最新版本（当前为14.6.1）。详细操作步骤见上方《macOS Sonoma 系统安装白果网卡补丁（OpenCore Legacy Patcher for Sonoma）的说明》。
+2. 例行升级 kext 版本（Lilu、WhateverGreen、AppleALC、NVMeFix、FeatureUnlock）。
+
+2023-09-29
+⚠️⚠️ 如果不需要升级 14 系统，建议暂不更新此 EFI。
+1. 添加 intel 网卡两个配置文件，使用 intel 网卡的请基于此文件修改，kext 驱动默认未添加，需自行加入。
+2. 修复在系统偏好设置中升级 Sonoma，无法进入安装的问题。
+3. 修复 Sonoma 系统下部分应用闪退的问题。
+4. 白果网卡（或其他采用博通芯片的网卡）驱动在 macOS Sonoma 系统中被移除，当前 EFI 已经做了必要的处理，网卡驱动补丁需要进入系统后手动安装。另外需注意，后续进行小版本更新后网卡补丁会被还原，需要重新运行安装。详细操作步骤见上方《macOS Sonoma 系统安装白果网卡补丁（OpenCore Legacy Patcher for Sonoma）的说明》
+
+2023-09-26
+⚠️⚠️ 如果不需要升级 14 系统，建议暂不更新此 EFI。
+1. 更新 OpenCore 0.9.5 正式版。
+2. 例行升级 kext 版本（Lilu、WhateverGreen、AppleALC、NVMeFix、FeatureUnlock、BlueToolFixup）。
+3. 白果网卡（或其他采用博通芯片的网卡）驱动在 macOS Sonoma 系统中被移除，当前 EFI 已经做了必要的处理，网卡驱动补丁需要进入系统后手动安装。另外需注意，后续进行小版本更新后网卡补丁会被还原，需要重新运行安装。详细操作步骤见上方《macOS Sonoma 系统安装白果网卡补丁（OpenCore Legacy Patcher for Sonoma）的说明》
 
 2023-07-11
 1. 更新 OpenCore 0.9.3 正式版。
